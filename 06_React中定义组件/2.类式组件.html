@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>函数式组件</title>
+    <!-- 引入react核心库 -->
+    <script type="text/javascript" src="../js/react.development.js"></script>
+    <!-- 引入react-dom：用于支持react操作DOM -->
+    <script type="text/javascript" src="../js/react-dom.development.js"></script>
+    <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/babel">
+    // 1.定义一个类式组件：类名必须大写
+    class Demo extends React.Component {
+      /* 
+        1.render方法是放在哪里的？ ----> Demo的原型对象上，供实例使用
+          供实例使用：是要靠实例找到原型上的这个东西
+        2.render中的this是谁？ ----> Demo的实例对象
+          为什么此处那么肯定render中的this是Demo组件实例呢？
+          因为这个render函数是React通过创建一个Demo实例，再通过这个实例进而调用的。
+      */
+      render() {
+        console.log(this);
+        return <h1>React测试：类式组件的定义</h1>
+      }
+    };
+
+    /* 
+      直接调用：此时this是undefined
+      让x指向Demo一个实例对象中的render方法，然后直接调用x()
+    */
+    const x = new Demo().render;
+    x();
+    
+    /* 
+      2.渲染组件到页面
+        1.React解析组件标签，寻找Demo组件的定义位置
+        2.React发现Demo组件是用类定义的：React会创建一个该类的实例对象---d
+        3.通过该实例对象d调用render方法：d.render()
+        4.所以render()方法是通过组件实例对象调用的，没有丢失this对象。（不是直接调用，this对象不是window，不会因为严格模式变成undefined）
+    */
+    ReactDOM.render(<Demo/>, document.getElementById('test'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>引出生命周期</title>
+  <!-- 引入react核心库：全局多一个React -->
+  <script type="text/javascript" src="../js/react.development.js"></script>
+  <!-- 引入react-dom：用于支持react操作DOM，全局多一个React.DOM -->
+  <script type="text/javascript" src="../js/react-dom.development.js"></script>
+  <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+  <script type="text/javascript" src="../js/babel.min.js"></script>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/babel">
+    /* 
+      组件的生命周期：组件从创建到消亡的过程，经历若干重要的阶段，每个阶段都会做一些具体的动作。
+      体现在代码上就是一系列的生命周期钩子函数：constructor, componentWillxxx, render, componentDidxxx
+    */
+    class Life extends React.Component{
+
+      // 初始化state状态
+      state = {opacity:1}
+
+      render(){
+        let { opacity } = this.state;
+        return (
+          <div>
+            {/* 这里可以用对象的简写方式：style={{opacity}} */}
+            <h1 style={{opacity:opacity}}>React学不会怎么办？</h1>
+            <button onClick={this.death}>不活了</button>  
+          </div>
+        )
+      }
+
+      // setState每执行一次都会引起render的执行
+      fade = () => {
+        this.timer = setInterval(()=>{
+          let { opacity } = this.state; 
+          if (opacity <= 0) {
+            opacity = 1;
+          }
+          this.setState({opacity:(opacity-0.1)});
+        }, 100);
+      }
+
+      // 组件挂载完成：在第一次render执行完成之后会被调用，也是组件实例对象调用this正确，且只会调用一次
+      componentDidMount() {
+        console.log('componentDidMount');
+        this.fade();
+      }
+
+      // 组件卸载之前会执行这个钩子
+      componentWillUnmount() {
+        console.log('componentWillUnmount');
+        clearInterval(this.timer);
+      }
+
+      // 卸载组件
+      death = ()=>{
+        // 卸载某个标签元素上的组件
+        ReactDOM.unmountComponentAtNode(document.getElementById('test'))
+      }
+    }
+
+    ReactDOM.render(<Life/>, document.getElementById('test'))
+  </script>
+</body>
+</html>

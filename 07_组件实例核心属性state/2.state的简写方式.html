@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>state的简写方式</title>
+    <!-- 引入react核心库 -->
+    <script type="text/javascript" src="../js/react.development.js"></script>
+    <!-- 引入react-dom：用于支持react操作DOM -->
+    <script type="text/javascript" src="../js/react-dom.development.js"></script>
+    <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/babel">
+    // 1.定义一个类式组件：注意一点类本省的方法也会自动开启严格模式
+    class Weather extends React.Component {
+
+      //定义属性并初始化状态
+      state = {isHot: true}; 
+      /* 
+        注意此时show是添加在实例上的属性，不是放在原型上的方法。
+        但是onClick={this.show}：指明事件的回调函数时，还是通过找到this.show这个属性，然后将其引用返回给了conClick
+        之后会通过这个引用直接调用this.show指向的方法，导致发生了直接调用。
+        但是babel开启了严格模式，不允许一个自定义的this指向Window对象。所以this是undefined。
+
+        为什么组件中的render方法中的this为组件实例对象？
+          因为render是由React创建的Weather实例对象调用的，不是直接调用，所以this是组件实例对象。
+
+        当组件中的自定义方法的this是undefined时：用=>函数来解决/或者bind()强制绑定this
+      */
+      // show = function() {
+      //   console.log(this); //undefined
+      //   const isHot = this.state.isHot;
+      //   this.setState({isHot: !isHot})
+      // }
+      // 用=>函数来避免这个问题：=>函数没有自己的this，但是如果用了this，回去外层找。外层正好就是当前weather实例对象
+      show = () => {
+        console.log(this);
+        const isHot = this.state.isHot;
+        this.setState({isHot: !isHot})
+      }
+
+      render() {
+        const {isHot} = this.state;
+        return <h1 onClick={this.show}>今天的天气很{isHot ? hot : cool}</h1>
+      }
+    }
+
+    // 2.渲染
+    let hot = '炎热';
+    let cool = '凉爽';
+    ReactDOM.render(<Weather/>, document.getElementById('test'));
+  </script>
+</body>
+</html>

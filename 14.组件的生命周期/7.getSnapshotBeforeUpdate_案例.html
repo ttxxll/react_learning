@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>getSnapshotBeforeUpdate_案例</title>
+
+  <!-- 引入新版的React库 -->
+  <script type="text/javascript" src="../js/17.0.1/react.development.js"></script>
+  <script type="text/javascript" src="../js/17.0.1/react-dom.development.js"></script>
+  <script type="text/javascript" src="../js/17.0.1/babel.min.js"></script>
+
+  <style>
+    .list {
+      width: 200px;
+      height: 150px;
+      overflow: auto;
+    }
+    .item{
+      width: 100%;
+      height: 30px;
+      line-height: 30px;
+      background-color: skyblue;
+    }
+  </style>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/babel">
+    class News extends React.Component {
+
+      state = {newsArr:[]};
+
+      componentDidMount(){
+        this.timer1 = setInterval(() => {
+          const { newsArr } = this.state;
+          //新生成一个新闻
+          const n = '新闻'+(newsArr.length+1);
+          // 新生成的新闻放到数组头部：不建议使用会改变原数组的api，unshift,push
+          // newsArr.unshift(n);
+          //this.setState({newsArr:newsArr})
+
+          // 这样来更新
+          this.setState({newsArr:[n,...newsArr]})
+        }, 1000)
+      }
+
+      // 在DOM真正更新前得到一些快照信息：此处我们获取scroll的旧值，并传给componentDidUpdate
+      getSnapshotBeforeUpdate() {
+        return this.refs.list.scrollHeight;
+      }
+
+      /* 
+        随着新闻的增加，内容会向下变长。但是我只想显示前五条新闻，不显示最新的新闻
+      */
+      componentDidUpdate(prevProps, prevState, snapshotValue) {
+        // 这里因为我们知道每个新闻高度固定是30所以可以这样写
+        //this.refs.list.scrollTop += 30;
+
+        // 假设我们不知道新闻高度，且新闻高度不固定，那么我们就要在将新闻真正渲染到页面上之前计算出原来scroll的高度，
+        // 再用渲染后的高度减去之前的高度，就得到要滚动的高度
+        this.refs.list.scrollTop += (this.refs.list.scrollHeight - snapshotValue);
+      }
+
+      // 注意清除定时器
+      componentWillUnmount() {
+        clearInterval(this.timer1)
+      }
+
+      render() {
+        return (
+          <div className="list" id="list" ref="list">
+            {
+              this.state.newsArr.map((news,index) => {
+                return <div className="item" key={index}>{news}</div>
+              })
+            }
+          </div>
+        )
+      }
+    }
+
+    ReactDOM.render(<News/>, document.getElementById('test'))
+  </script>
+</body>
+</html>

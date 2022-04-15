@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>React生命周期旧</title>
+  <!-- 引入react核心库：全局多一个React -->
+  <script type="text/javascript" src="../js/react.development.js"></script>
+  <!-- 引入react-dom：用于支持react操作DOM，全局多一个React.DOM -->
+  <script type="text/javascript" src="../js/react-dom.development.js"></script>
+  <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+  <script type="text/javascript" src="../js/babel.min.js"></script>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/babel">
+    /* 
+      组件的生命周期：组件从创建到消亡的过程，经历若干重要的阶段，每个阶段都会做一些具体的动作。
+      体现在代码上就是一系列的生命周期钩子函数：constructor, componentWillxxx, render, componentDidxxx
+      注意：生命周期钩子函数不用写成箭头函数，因为他们都是组件实例调用的，不会丢失this
+
+      小结：
+      1.初始化阶段：由ReactDOM.render()触发---初次渲染
+        1.constructor()
+        2.componentWillMount()
+        3.render()
+        4.componentDidMount()
+      2.更新阶段：由组件内部this.setState()或forceUpdate()触发或父组件更新render触发
+        1.shouldComponentUpdate()
+        2.componentWillUpdate()  ----> forceUpdate从此处开始
+        3.render()
+        4.componentDidUpdate()
+      3.卸载组件：由ReactDOM.unmountComponentAtNode()触发
+        1.componentWillUnmount()
+    */
+    class Count extends React.Component{
+
+      // 构造函数
+      constructor() {
+        console.log('1--->constructor');
+        super();
+        this.state = {count:0};
+      }
+
+      // 组件将要挂载时会调用该生命周期钩子
+      componentWillMount() {
+        console.log('2--->componentWillMount');
+      }
+
+      render(){
+        console.log('3--->render');
+        let { count } = this.state;
+        return (
+          <div>
+            <h1>当前求和：{this.state.count}</h1>
+            <button onClick={this.add}>点我+1</button>
+            <button onClick={this.unmount}>点我卸载组件</button>
+            <button onClick={this.mustUpdate}>强制更新</button>
+          </div>
+        )
+      }
+
+      /* 
+        组件挂载完成时会调用的生命周期钩子：且只会调用一次
+        很常用：一般做一些初始化的事情，开启定时器，发送ajax请求，消息订阅等等
+      */
+      componentDidMount(){
+        console.log('4--->componentDidMount');
+      }
+
+      /* 
+        控制是否允许组件更新：true允许，false不允许
+        执行时机：
+          1.setState时会触发：如果返回的是true才会调用render进行渲染，返回false时不会调用render进行渲染
+          2.父组件render-->componentWillReceiveProps钩子-->shouldComponentUpdate钩子
+        注意：即使返回false不允许render的话，但是state中的状态还是更新成功了的，只是没有渲染而已。  
+      */
+      shouldComponentUpdate() {
+        console.log('setState时会询问是否允许更新-->shouldComponentUpdate');
+        return false;
+      }
+
+      /* 
+        当组件将要更新时会调用这个生命周期钩子
+        执行时机：
+          1.shouldComponentUpdate钩子返回true
+          2.直接调用forceUpdate：强制更新时会调用这个生命周期钩子
+      */
+      componentWillUpdate() {
+        console.log('将要更新-->componentWillUpdate');
+      }
+
+      // 组件更新完毕时，DOM节点渲染完毕后：会调用这个生命周期钩子
+      componentDidUpdate(){
+        console.log('组件更新完毕-->componentDidUpdate');
+      }
+
+      // 组件将要消亡时会调用的生命周期钩子：一般做一些收尾的事情，关闭定时器
+      componentWillUnmount(){
+        console.log('5--->componentWillUnmount');
+      }
+
+      // 加法按钮的回调函数
+      add = () => {
+        let { count } = this.state;
+        this.setState({count:count+1});
+      }
+
+      // 卸载按钮的回调
+      unmount = () => {
+        ReactDOM.unmountComponentAtNode(document.getElementById('test'))
+      }
+
+      // 强制更新回调
+      mustUpdate = () => {
+        this.forceUpdate();
+      }
+    }
+
+    ReactDOM.render(<Count/>, document.getElementById('test'))
+  </script>
+</body>
+</html>

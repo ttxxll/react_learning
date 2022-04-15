@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>对象属性相关知识</title>
+</head>
+<body>
+  <script type="text/javascript">
+    let a = 'name';
+    let b = 'tom';
+    let person = {}; //{name: 'tom'}
+
+    // 对象.xx = yy ：不会认为xx是变量，因为对象属性名都是字符串，所以认为其实一个字符串字面量直接放到对象属性中。
+    person.a = b; //得到的是{a: 'tom'}
+    console.log(person);
+    // 对象[xx] == yy ：会认为xx是一个变量，对其进行解析读取
+    person[a] = b; // 得到{name: 'tom'}
+    console.log(person);
+  </script>
+</body>
+</html>

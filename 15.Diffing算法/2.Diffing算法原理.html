@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"> 
+  <title>Diffing算法原理</title>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/javascript" src="../js/17.0.1/react.development.js"></script>
+  <script type="text/javascript" src="../js/17.0.1/react-dom.development.js"></script>
+  <script type="text/javascript" src="../js/17.0.1/babel.min.js"></script>
+
+  <!-- 
+    Diffing算法原理涉及的两个面试题：
+    先声明一下，这个key属性是虚拟DOM的属性，最后渲染出来的DOM中没有key这个属性。
+    1.react/vue中虚拟DOM的key有什么作用？key的内部原理是什么？
+    2.为什么遍历列表式，key做好不要用index？
+
+    1.虚拟DOM中的key的作用：
+      简单的说：key就是虚拟DOM对象的标识。类似它的id，在更新显示时key起着极其重要的作用
+      详细的说：当状态中的数据发生变化时，react会根据【新数据】生成【新的虚拟DOM】，随后React进行【新虚拟DOM】与
+               【旧虚拟DOM】的diff比较，比较规则如下：
+                a.当在旧虚拟DOM中找到了与新虚拟DOM相同的key，会进一步比较两个相同key的虚拟DOM的内容是否发生了变化。
+                  若虚拟DOM内容改变：则生成新的真实DOM，随后替换掉页面中之前生成的真实DOM
+                  若虚拟DOM前后没变：直接使用之前的真实DOM。
+                b.在旧虚拟DOM中未找到与新虚拟DOM相同的key：直接创建新的真实DOM，随后渲染到页面。
+                
+      注意：在比较时，是虚拟DOM之间进行的比较，所以如果两个虚拟DOM都是一样的话（虚拟DOM没有value），但是真实DOM的value不一样，还是会复用
+    2.用数组index作为key可能会引发的问题：
+      a.若对数据进行逆序添加，逆序删除等破坏原来数组顺序的操作后：原来DOM的内容没有发生变化，但是key会随着index而变化，进而会产生没有必要的真实DOM更新。
+      b.如果结构中还包含输入类的DOM，比如input：会产生错误的DOM更新，界面效果会发生错误。
+        在比较时，是虚拟DOM之间进行的比较，所以如果两个虚拟DOM都是一样的话（虚拟DOM没有value），但是真实DOM的value不一样，还是会复用。
+        比如：<li key='index'><input/></li>这种dom结构：
+          经过虚拟DOM比较后发现li需要重新渲染新的真实DOM，但是里面的input可以复用，
+          那么如果这个input里面输入了原来真实DOM的相关信息的话，就会发生界面效果错误的情况：新的li，里面的input是就旧的li的信息。
+        措施：可以为input也加一个key避免，让其也进行更新，避免这种错误显示的情况、
+      c.注意：如果不存在对数据的逆序添加，逆序删除等破坏顺序的操作，仅用于渲染列表用于战术，使用index作为key是没有问题的。
+
+    3.开发中如何选择key?
+      1.最好使用每条数据的唯一标识作为key，且相对于该数据来说是固定的标识。
+   -->
+  <script type="text/babel">
+
+    class Person extends React.Component {
+      state = {
+        persons:[
+          {id:'001', name:'小李', age:18},
+          {id:'003', name:'小六', age:19}
+        ]
+      }
+
+      addWang = () => {
+        let wang = {id:'004', name:'小王', age:20};
+        const { persons } = this.state;
+        this.setState({persons:[wang,...persons]})
+      }
+
+      render() {
+        return (
+          <div>
+            <button onClick={this.addWang}>添加一个小王</button>
+            <h2>如下的列表，使用index作为每个li的key</h2>
+            <ul>
+              {
+                this.state.persons.map((item, index) => <li key={index}>{item.name}-{item.age} <input type="text"/> </li>)
+              }
+            </ul>
+
+            <hr/>
+
+            <h2>如下的列表，使用item.id作为每个li的key</h2>
+            <ul>
+              {
+                this.state.persons.map((item, index) => <li key={item.id}>{item.name}-{item.age} <input type="text"/> </li>)
+              }
+            </ul>
+          </div>
+        )
+      }
+      
+    }
+
+    ReactDOM.render(<Person/>, document.getElementById('test'))
+  </script>
+</body>
+</html>

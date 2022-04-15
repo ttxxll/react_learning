@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <!-- 引入react核心库 -->
+  <script type="text/javascript" src="../js/react.development.js"></script>
+  <!-- 引入react-dom：用于支持react操作DOM -->
+  <script type="text/javascript" src="../js/react-dom.development.js"></script>
+  <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+  <script type="text/javascript" src="../js/babel.min.js"></script>
+
+  <style>
+    .title {
+      background-color: orange;
+    }
+  </style>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/babel">
+    //1.模拟一些数据
+    const data = 'Hello,React';
+    //2.创建虚拟DOM
+    const fontSize = '60px';
+    const VDOM = (
+      <div>
+        <h1 style={{color:'red', fontSize: fontSize}} className='title'>{data}</h1>
+        <span>并列的结构必须在外层用div包住</span>
+        <input type="text"/>
+        {/*<peiqi>佩奇</peiqi>*/}
+      </div>
+    )
+    //3.渲染虚拟DOM
+    ReactDOM.render(VDOM, document.getElementById('test'));
+
+    /* 
+      jsx语法规则：
+        1.创建虚拟DOM时，不要写引号：否则就成了是字符串
+        2.标签中要混入js表达式时：要用胡子语法{}，比如要读取js变量时。
+        3.标签中样式的类名要用className指定
+        4.标签中的内联样式写法：style={{color:'red', fontSize: '10px'}
+          第一对{}表示胡子语法：{}里面要写js表达式。注意必须是表达式，不是任意的JS代码语句。
+          第二对{}表示的是js对象：对象中的属性名color，属性值'red'。
+          如果属性值不加''，表示的就是一个变量
+          因为对象中的属性名一般都是小驼峰的，所以要将font-size写成fontSize。
+        5.只能有一个根标签：并列的结构必须在外层用div包住
+        6.标签必须闭合：<input type="text"/>，不能写成<input type="text">
+        7.关于标签首字母：
+          若首字母小写，那么React就回去寻找与之同名的html标签
+          若首字母大写，那么就意味这该标签是一个组件，使用该组件
+        8.使用注释：先用{}申明要写js的东西了，然后在用多行注释包住要注释的内容  
+    */
+  </script>
+</body>
+</html>

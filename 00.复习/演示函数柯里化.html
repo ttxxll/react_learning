@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>演示函数柯里化</title>
+</head>
+<body>
+  <script type="text/javascript">
+    // 正常函数写法
+    function sum(a,b,c) {
+      return a+b+c;
+    }
+    let result = sum(1,2,3);
+    console.log(result);
+
+    // 柯里化写法：通过函数调用继续返回函数的方式，“实现多次接受参数！！”最后统一处理的函数编码形式。
+    // 多次调用，多次压栈出栈对内存不友好：
+    function sum1(a) {
+      return (b) => {
+        return (c) => {
+          return a+b+c;
+        }
+      }
+    }
+    result = sum1(4)(5)(6);
+    console.log(result);
+
+  </script>
+</body>
+</html>

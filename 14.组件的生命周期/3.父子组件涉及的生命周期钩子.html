@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>父子组件涉及的生命周期钩子</title>
+  <!-- 引入react核心库：全局多一个React -->
+  <script type="text/javascript" src="../js/react.development.js"></script>
+  <!-- 引入react-dom：用于支持react操作DOM，全局多一个React.DOM -->
+  <script type="text/javascript" src="../js/react-dom.development.js"></script>
+  <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+  <script type="text/javascript" src="../js/babel.min.js"></script>
+
+  <style>
+    .a{
+      width: 400px;
+      height: 400px;
+      background-color: orange;
+      padding: 10px;
+    }
+    .b{
+      background-color: gray;
+    }
+  </style>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/babel">
+
+    // 父组件A
+    class A extends React.Component{
+
+      state = {carname:'阿特兹'}
+
+      changeCar = () => {
+        this.setState({carname:'奔驰c63'})
+      }
+
+      render() {
+        const { carname } = this.state;
+        return (
+          <div className="a">
+            <h3>我是A组件，我的车是：{carname}</h3>
+            <button onClick={this.changeCar}>换车</button>  
+            {/*注意：这里是父组件给子组件传递props*/}
+            <B carname={carname}></B>
+          </div>
+        )
+      }
+    }
+
+    // 子组件B
+    class B extends React.Component{
+      
+      render() {
+        let {carname} = this.props;
+        return <h3 className="b">我是B组件，我收到父组件给我的车是：{carname}</h3>
+      }
+
+      // 父组件即非首次render时，都会调用这个生命周期钩子。无论父组件有没有给子组件传递props都会触发
+      componentWillReceiveProps(){
+        console.log('父组件非首次render时-->componentWillReceiveProps');
+      }
+
+      /* 
+        控制是否允许组件更新：true允许，false不允许
+        执行时机：
+          1.setState时会触发：如果返回的是true才会调用render进行渲染，返回false时不会调用render进行渲染
+          2.父组件render-->componentWillReceiveProps钩子-->shouldComponentUpdate钩子
+      */
+      shouldComponentUpdate() {
+        console.log('setState时会询问是否允许更新-->shouldComponentUpdate');
+        return true;
+      }
+
+      /* 
+        当组件将要更新时会调用这个生命周期钩子
+        执行时机：
+          1.shouldComponentUpdate钩子返回true
+          2.直接调用forceUpdate：强制更新时会调用这个生命周期钩子
+      */
+      componentWillUpdate() {
+        console.log('将要更新-->componentWillUpdate');
+      }
+
+      // 组件更新完毕时会调用这个生命周期钩子
+      componentDidUpdate(){
+        console.log('组件更新完毕-->componentDidUpdate');
+      }
+    }
+
+    ReactDOM.render(<A/>, document.getElementById('test'))
+  </script>
+</body>
+</html>

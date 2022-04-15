@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>事件处理</title>
+  <!-- 引入react核心库：全局多一个React -->
+  <script type="text/javascript" src="../js/react.development.js"></script>
+  <!-- 引入react-dom：用于支持react操作DOM，全局多一个React.DOM -->
+  <script type="text/javascript" src="../js/react-dom.development.js"></script>
+  <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+  <script type="text/javascript" src="../js/babel.min.js"></script>
+
+  <style>
+    .container{
+      width: 400px;
+      height: 400px;
+      background-color: orange;
+    }
+
+    .child{
+      width: 200px;
+      height: 200px;
+      background-color: gray;
+    }
+  </style>
+</head>
+<body>
+  <div id="test"></div>
+  <script type="text/babel">
+    /* 
+      1.通过onXxx属性为标签元素指定事件处理函数（注意大小写） ---- onclick原生事件兼容性不好，为了更好的兼容性使用自定义事件
+        React使用的是自定义（合成）事件，而不是使用的原生内置DOM事件：
+          const onClick = new Event('onClick');
+        React中的事件是通过事件-委托方式处理的。（委托给组件最外层的元素）---- 为了效率高：比如若干个子元素都要加同名的事件，可以直接将事件加到父元素上
+          所以外层的元素也会触发其事件回调，如果不想这样，那么需要禁止事件冒泡。
+      2.通过event.target得到发生事件的DOM元素对象
+    */
+    // 1.定义一个函数式组件
+    class Demo extends React.Component {
+      render(){
+        return (
+          <div className="container" onClick={this.test}>
+            <button onClick={this.show1}>按钮1</button>
+            <button onClick={this.show2}>按钮2</button>
+            <div className="child" onClick={this.show3}>xxxx</div>
+          </div>
+        )
+      }
+      
+      show1 = (event) => {
+        /* 
+          接收到的event是React自定义的事件对象，这个event拥有者和原生event同样的属性。
+          打印出来我们观察到event中的属性都是null，但是如果我们指定要使用哪个属性时，打印出来有具体的值。
+          也就是一个懒加载的思想，不管三七二十一全部把属性都放到这个事件对象上，太浪费空间，用到的时候才初始化具体值。
+        */
+        console.log('按钮1: ', event);
+        console.log('按钮1: ', event.altKey);
+        console.log('按钮1: ', event.target); // 通过event.target得到发生事件的DOM元素对象
+        console.log('按钮1: ', event.target.innerText);
+        event.stopPropagation();// 阻止事件冒泡：不让外层元素触发同名事件。
+      }
+      show2 = () => {
+        console.log('按钮2');
+      }
+      show3 = () => {
+        console.log('xxxx');
+      }
+      test = () => {
+        console.log('test');
+      }
+    }
+
+    // 2.将组件渲染到页面上
+    ReactDOM.render(<Demo/>, document.getElementById('test'))
+  </script>
+</body>
+</html>

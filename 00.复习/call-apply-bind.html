@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body>
+  <script type="text/javascript">
+    function demo() {
+      console.log(this);
+    }
+
+    demo();
+    demo.call(1);  //1.改变this为1，并且调用demo()
+    demo.apply(2); //2.改变this为2，并且调用demo()
+    const fun = demo.bind(3);  //3.改变this为3，不会调用demo()，会返回一个新的函数，并且this时3
+    fun();
+  </script>
+</body>
+</html>

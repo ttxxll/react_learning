@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>验证Diffing算法</title>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/javascript" src="../js/17.0.1/react.development.js"></script>
+  <script type="text/javascript" src="../js/17.0.1/react-dom.development.js"></script>
+  <script type="text/javascript" src="../js/17.0.1/babel.min.js"></script>
+
+  <!-- 
+    个人理解：
+      1.diffing算法进行比较时的最小粒度是标签，两个标签的虚拟DOM存在不同的时，就会重新生成一个真实的DOM，否则复用之前的DOM。
+      2.虚拟DOM是存在内存中的，经过渲染后转成真实DOM放到页面上。所以虚拟DOM对象是没有value属性的，真实DOM才有value属性。
+        所以如果input中的内容，在经过页面渲染后没有被刷新的话，说明这个input没有重新生成，还是复用的之前的dom。
+        而且在比较时，是虚拟DOM之间进行的比较，所以如果两个虚拟DOM都是一样的话，但是真实DOM的value不一样，还是会复用
+   -->
+  <script type="text/babel">
+
+    let vDOM = <h1>Hello, React</h1>
+    // 虚拟DOM对象是没有value属性的
+    console.log(vDOM);
+
+    class Time extends React.Component {
+
+      state = {date: new Date()}
+
+      componentDidMount() {
+        setInterval(() => {
+          this.setState({
+            date: new Date()
+          })
+        }, 1000)
+      }
+
+      render() {
+          return (
+            <div>
+              <h1>hello</h1>
+              <input type="text"/>
+              <span>
+                现在是：{this.state.date.toTimeString()}
+              </span>
+            </div>
+          )
+        }
+    }
+
+    ReactDOM.render(<Time/>, document.getElementById('test'))
+  </script>
+</body>
+</html>

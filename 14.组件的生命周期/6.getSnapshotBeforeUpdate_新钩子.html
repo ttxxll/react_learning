@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>getSnapshotBeforeUpdate_获取快照在DOM更新之前</title>
+
+  <!-- 引入新版的React库 -->
+  <script type="text/javascript" src="../js/17.0.1/react.development.js"></script>
+  <script type="text/javascript" src="../js/17.0.1/react-dom.development.js"></script>
+  <script type="text/javascript" src="../js/17.0.1/babel.min.js"></script>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/babel">
+    
+    class Count extends React.Component{
+
+      // 构造函数
+      constructor() {
+        console.log('1--->constructor');
+        super();
+        this.state = {count:0, name:'txl'};
+      }
+
+      /* 
+        获取快照在DOM更新之前：索然调用了render但是页面还没真正更新时调用该钩子
+        调用时机：在render和componentDidUpdate之间被执行，
+          更新时（setState/forceUpdate）：render --> getSnapshotBeforeUpdate --> componentDidUpdate
+          注意：调用了getSnapshotBeforeUpdate时，还没有更新到DOM。即渲染输出到DOM节点之前被调用
+        使用方法：
+          必须结合componentDidUpdate钩子使用
+          必须返回一个快照Snapshot：A snapshot value (or null) must be returned.
+          任意一个值都能作为快照值，返回的快照值会被componentDidUpdate钩子接收到
+      */
+      getSnapshotBeforeUpdate() {
+        console.log('getSnapshotBeforeUpdate');
+        return '任意一个值都能作为快照值';
+      }
+
+      /* 
+        参数：
+          1.prevProps：最初始的那个props值
+          2.prevState：上一次state值
+      */
+      componentDidUpdate(prevProps, prevState, snapshotValue) {
+        console.log('componentDidUpdate',prevProps, prevState, snapshotValue);
+      }
+
+      render(){
+        console.log('3--->render');
+        let { count } = this.state;
+        return (
+          <div>
+            <h1>当前求和：{this.state.count}</h1>
+            <h1>测试：{this.state.name}</h1>
+            <button onClick={this.add}>点我+1</button>
+            <button onClick={this.unmount}>点我卸载组件</button>
+            <button onClick={this.mustUpdate}>强制更新</button>
+          </div>
+        )
+      }
+
+
+      // 加法按钮的回调函数
+      add = () => {
+        let { count } = this.state;
+        this.setState({count:count+1});
+      }
+
+      // 卸载按钮的回调
+      unmount = () => {
+        ReactDOM.unmountComponentAtNode(document.getElementById('test'))
+      }
+
+      // 强制更新回调
+      mustUpdate = () => {
+        this.forceUpdate();
+      }
+    }
+
+    ReactDOM.render(<Count a={666}/>, document.getElementById('test'))
+  </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>使用js语法创建虚拟DOM</title>
+    <!-- 引入react核心库 -->
+    <script type="text/javascript" src="../js/react.development.js"></script>
+    <!-- 引入react-dom：用于支持react操作DOM -->
+    <script type="text/javascript" src="../js/react-dom.development.js"></script>
+</head>
+<body>
+  <div id="test"></div>
+  <script type="text/javascript">
+    // 1.创建虚拟DOM，三个参数分别是：标签，属性，内容
+    let VDOM = React.createElement('h1', {id: 'atguigu'}, 'Hello, React');
+
+    // 这个创建的是真实DOM
+    document.createElement('h1');
+
+    // js语法创建带有嵌套结构的虚拟DOM：h1包一个span
+    let VDOM1 = React.createElement('h1', {id: 'atguigu'}, React.createElement('span', null, 'Hello, React'));
+
+    // 2.虚拟DOM转成真实DOM，再渲染到页面
+    ReactDOM.render(VDOM1, document.getElementById('test'));
+  </script>
+</body>
+</html>

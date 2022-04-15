@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>对props进行限制</title>
+  <!-- 引入react核心库：全局多一个React -->
+  <script type="text/javascript" src="../js/react.development.js"></script>
+  <!-- 引入react-dom：用于支持react操作DOM，全局多一个React.DOM -->
+  <script type="text/javascript" src="../js/react-dom.development.js"></script>
+  <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+  <script type="text/javascript" src="../js/babel.min.js"></script>
+  <!-- 引入props-types：用于对porps接收的标签属性进行限制，全局多一个PropTypes -->
+  <script type="text/javascript" src="../js/prop-types.js"></script>
+</head>
+<body>
+  <div id="test1"></div>
+  <div id="test2"></div>
+
+  <!-- props：专门收集从组件实例外部传进来的数据 -->
+  <script type="text/babel">
+
+    // 1.定义组件
+    class Person extends React.Component{
+
+      static propTypes = {
+        name: PropTypes.string.isRequired,
+        age: PropTypes.number,
+        sex: PropTypes.string
+      }
+
+      static defaultProps = {
+        age:18
+      }
+
+      render() {
+        let {name, sex, age} = this.props;
+        return (
+          <ul>
+            <li>姓名：{name}</li>
+            <li>性别：{sex}</li>
+            <li>年龄：{age+1}</li>
+          </ul>
+        )
+      }
+    }
+
+    /* 
+      2.对props中的属性进行限制：
+        发现报错：Cannot read properties of undefined (reading 'String')
+        React 15之前PropTypes是集成在React上面的
+        React 16之后PropTypes被单独出去来放到prop-types.js库中了，所以此处回报错误
+        所以要引入props-types.js用于对porps接收的标签属性进行限制，全局多一个PropType
+      
+      注意：
+        Person.propTypes = {}：这种写法，是为Person这个类加一个静态属性propTypes。
+        等价于在Person类中写 static propTypes = {}
+      
+      注意：
+        16.2之前React想要和原生类型保持一致，类型名开头都是大写：String, Number...
+        16.8之后，类型名都变成小写
+
+        如果我没有传age={12}：那么不会报错。但是在Person类的render中从props中获取的age是一个undefined，再让其进行+1操作，会返回一个NaN。因为undefined不是Number
+    */
+    // Person.propTypes = {
+    //   // name: React.PropTypes.String,
+    //   // age: React.PropTypes.Number,
+    //   // sex: React.PropTypes.String
+    //   name: PropTypes.string.isRequired,
+    //   age: PropTypes.number,
+    //   sex: PropTypes.string
+    // }
+
+    // 默认值：是为Person这个类加一个静态属性defaultProps。
+    // Person.defaultProps = {
+    //   age:18
+    // }
+
+    // 3.渲染组件
+    /* 
+      简单使用props：专门收集从组件实例外部传进来的组件标签属性。
+      发现这种分别传递标签属性时，传递的变量类型都是String，怎么传递int型呢？
+        age=12：报错
+        age={12}：还是要记住{}中是js表达式，所以可以这样写
+        age="12" <==> age={'12'}
+    */
+    ReactDOM.render(<Person name="小猫" sex="男" age={12}/>, document.getElementById('test1'))
+
+    // 3.模拟服务器返回的数据
+    const p1 = {
+      name: '大哥',
+      sex: '男',
+      age: 18,
+      description: '老牛了'
+    }
+    // 分别传递标签属性
+    ReactDOM.render(<Person {...p1}/>, document.getElementById('test2'))
+  </script>
+</html>

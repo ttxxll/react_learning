@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>字符串形式的ref</title>
+  <!-- 引入react核心库：全局多一个React -->
+  <script type="text/javascript" src="../js/react.development.js"></script>
+  <!-- 引入react-dom：用于支持react操作DOM，全局多一个React.DOM -->
+  <script type="text/javascript" src="../js/react-dom.development.js"></script>
+  <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+  <script type="text/javascript" src="../js/babel.min.js"></script>
+</head>
+<body>
+  <div id="test"></div>
+  <script type="text/babel">
+    /* 
+      Refs提供了一种方式，允许我们访问DOM节点或在render方法中创建的React元素（render方法中创建的React元素最终还是会被渲染成DOM节点）。
+      简单点说：就是当你想拿到React组件中的DOM节点时，就用ref打上标识，然后从组件示例的refs中拿这个DOM节点。
+
+      用this.refs来存放ref
+
+      String类型的Refs不推荐使用
+    */
+    // 1.定义一个函数式组件
+    class Demo extends React.Component {
+      render() {
+        return (
+          <div>
+            {/*ref会被放到Demo示例的refs中*/}
+            <input type="text" id="input1" ref="input1"/>&nbsp;
+            <button onClick={this.show}>点我提示左侧数据</button>&nbsp;
+            <input type="text" ref="input2" onBlur={this.show2} placeholder="失去焦点提示事件"/>  
+          </div>
+        )
+      }
+
+      // 按钮点击事件
+      show = () => {
+        // alert(document.getElementById('input1').value);
+        // const {refs:{input1:{value:myInput}}} = this; const myInput = this.refs.input1.value
+        const {input1} = this.refs;
+        alert(input1.value);
+      }
+
+      show2 = ()=>{
+        const { input2 } = this.refs;
+        console.log(input2.value);
+      }
+    }
+
+    // 2.将组件渲染到页面上：传递的标签属性会传递给函数式组件中的props参数
+    ReactDOM.render(<Demo/>, document.getElementById('test'))
+  </script>
+</body>
+</html>

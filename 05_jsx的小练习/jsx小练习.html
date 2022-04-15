@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <!-- 引入react核心库 -->
+  <script type="text/javascript" src="../js/react.development.js"></script>
+  <!-- 引入react-dom：用于支持react操作DOM -->
+  <script type="text/javascript" src="../js/react-dom.development.js"></script>
+  <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+  <script type="text/javascript" src="../js/babel.min.js"></script>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/babel">
+    //0.模拟数据
+    const data = ['Angular', 'React', 'Vue'];
+    //1.创建虚拟DOM：直接写死
+    let VDOM = (
+      <div>
+        <h1>前端JS框架</h1>
+        <ul>
+          <li>Angular</li>
+          <li>React</li>
+          <li>Vue</li>
+        </ul>
+      </div>
+    );
+
+    /* 
+      React会默认遍历数组，将每个元素都放到ul里面
+    */
+    let VDOM1 = (
+      <div>
+        <h1>前端JS框架</h1>
+        <ul>
+          {data}
+        </ul>
+      </div>
+    )
+
+    /* 
+      但是我们想要的是ul里面是3个li，每个li里面是一个data[index]，那么用array.map()结合jsx语法来实现
+      每个li最好指定一个唯一的key
+    */
+    let VDOM2 = (
+      <div>
+        <h1>前端JS框架</h1>
+        <ul>
+          {data.map((item, index) => <li key={index}>{item}</li>)}
+        </ul>
+      </div>
+    )
+    //2.让React将虚拟DOM转为真实DOM，渲染到页面
+    ReactDOM.render(VDOM2, document.getElementById('test'))
+  </script>
+</body>
+</html>

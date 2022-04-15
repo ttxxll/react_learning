@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>getDerivedStateFromProps__新钩子</title>
+
+  <!-- 引入新版的React库 -->
+  <script type="text/javascript" src="../js/17.0.1/react.development.js"></script>
+  <script type="text/javascript" src="../js/17.0.1/react-dom.development.js"></script>
+  <script type="text/javascript" src="../js/17.0.1/babel.min.js"></script>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/babel">
+    
+    class Count extends React.Component{
+
+      // 构造函数
+      constructor() {
+        console.log('1--->constructor');
+        super();
+        this.state = {count:0, name:'txl'};
+      }
+
+      /* 
+        获取来自外部Props派生的State状态：
+        调用时机：constructor-->getDerivedStateFromProps / 每次setState-->getDerivedStateFromProps
+        用法：
+          当组件中的state完全取决于外部传来的props时，可以用这个钩子
+          定义为实例方法时会被忽略，要定义为static静态方法，而且要返回一个state对象｛会更新state，不是覆盖原来的state｝
+          返回null时不对state更新
+        参数：
+          1.外部传递来的props
+          2.自身的state
+      */
+      static getDerivedStateFromProps(props, state) {
+        console.log('getDerivedStateFromProps', props, state);
+        return {count:props.a}
+      }
+
+      render(){
+        console.log('3--->render');
+        let { count } = this.state;
+        return (
+          <div>
+            <h1>当前求和：{this.state.count}</h1>
+            <h1>测试：{this.state.name}</h1>
+            <button onClick={this.add}>点我+1</button>
+            <button onClick={this.unmount}>点我卸载组件</button>
+            <button onClick={this.mustUpdate}>强制更新</button>
+          </div>
+        )
+      }
+
+
+      // 加法按钮的回调函数
+      add = () => {
+        let { count } = this.state;
+        this.setState({count:count+1});
+      }
+
+      // 卸载按钮的回调
+      unmount = () => {
+        ReactDOM.unmountComponentAtNode(document.getElementById('test'))
+      }
+
+      // 强制更新回调
+      mustUpdate = () => {
+        this.forceUpdate();
+      }
+    }
+
+    ReactDOM.render(<Count a={666}/>, document.getElementById('test'))
+  </script>
+</body>
+</html>

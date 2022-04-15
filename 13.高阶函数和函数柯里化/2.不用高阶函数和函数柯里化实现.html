@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>不用高阶函数和函数柯里化实现</title>
+  <!-- 引入react核心库：全局多一个React -->
+  <script type="text/javascript" src="../js/react.development.js"></script>
+  <!-- 引入react-dom：用于支持react操作DOM，全局多一个React.DOM -->
+  <script type="text/javascript" src="../js/react-dom.development.js"></script>
+  <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+  <script type="text/javascript" src="../js/babel.min.js"></script>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/babel">
+    class Login extends React.Component{
+      // 初始化状态
+      state = {
+        username: '',
+        password: ''
+      }
+
+      render() {
+        return (
+          <form onSubmit={this.handleLogin}>
+            {/* 不用高阶函数和函数柯里化的写法 */}
+            用户名：<input type="text" onChange={(event) => {this.setState({username: event.target.value})}}/><br/>
+            密码：  <input type="password" onChange={(event) => {this.setState({password: event.target.value})}}/><br/>
+            <button onClick={this.handleLogin}>登录</button>
+          </form>
+        )
+      }
+
+      // saveFormData = (type) => {
+      //   return (event) => {
+      //     this.setState({[type]: event.target.value});
+      //   }
+      // }
+
+      // 登录按钮的回调
+      handleLogin = (event) => {
+        event.preventDefault();// 表单提交会进行默认的跳转动作，这里要阻止
+        let {username, password} = this.state;
+        console.log(`我的名字是${username}，密码是${password}`);
+      }
+    }
+
+    ReactDOM.render(<Login/>, document.getElementById('test'))
+  </script>
+</body>
+</html>

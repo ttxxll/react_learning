@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>非受控组件收集表单数据</title>
+  <!-- 引入react核心库：全局多一个React -->
+  <script type="text/javascript" src="../js/react.development.js"></script>
+  <!-- 引入react-dom：用于支持react操作DOM，全局多一个React.DOM -->
+  <script type="text/javascript" src="../js/react-dom.development.js"></script>
+  <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+  <script type="text/javascript" src="../js/babel.min.js"></script>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/babel">
+    /* 
+      非受控组件：表单中的数据在需要的时候，现用现取。（通过ref获取节点，进而访问到value值）
+      非受控：节点中的value没有被state控制。
+      必须要ref来拿到标签节点，但是react又不建议我们用ref，所以引出受控组件。
+    */
+    class Login extends React.Component{
+      render() {
+        return (
+          /* 这里不用action，因为action会引起页面的刷新。可以用axios实现页面无刷新的提交 */
+          <form onSubmit={this.handleLogin}>
+            {/*把这两个input节点存到组件示例对象中*/}
+            用户名：<input type="text" ref={currentNode => this.usernameNode = currentNode}/><br/>
+            密码：  <input type="password" ref={currentNode => this.passwordNode = currentNode}/><br/>
+            <button>登录</button>
+          </form>
+        )
+      }
+
+      handleLogin = (event) => {
+        event.preventDefault();// 表单提交会进行默认的跳转动作，这里要阻止
+        const { usernameNode, passwordNode } = this;
+        alert(`用户名是${usernameNode.value}，密码是${passwordNode.value}`)
+      }
+    }
+
+    ReactDOM.render(<Login/>, document.getElementById('test'))
+  </script>
+</body>
+</html>

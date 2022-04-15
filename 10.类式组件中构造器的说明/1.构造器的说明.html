@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>构造器的说明</title>
+  <!-- 引入react核心库：全局多一个React -->
+  <script type="text/javascript" src="../js/react.development.js"></script>
+  <!-- 引入react-dom：用于支持react操作DOM，全局多一个React.DOM -->
+  <script type="text/javascript" src="../js/react-dom.development.js"></script>
+  <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+  <script type="text/javascript" src="../js/babel.min.js"></script>
+</head>
+<body>
+  <div id="test"></div>
+  <script type="text/babel">
+    
+    // 1.定义一个函数式组件
+    class Dog extends React.Component {
+
+      /* 
+        此时类式组件中的构造器完全可以省略掉
+        若写了构造器，super必须调用。当需要在构造器中通过this.props取值时，那么props要传给super()，否则this.props是undefined。  
+      */
+      constructor(props) {
+        super();
+        console.log(this.props);// undefined
+      }
+      
+      render(){
+        let {name, age} = this.props;
+        return <h2>{name}，{age}</h2>
+      }
+    }
+
+    // 2.将组件渲染到页面上：传递的标签属性会传递给函数式组件中的props参数
+    ReactDOM.render(<Dog name="旺财" age={12}/>, document.getElementById('test'))
+  </script>
+</body>
+</html>

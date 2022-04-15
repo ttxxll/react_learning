@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body>
+  <script type="text/javascript">
+    class Dog {
+      constructor(name, age) {
+        this.name = name;
+        this.age = age;
+        this.f = function() {
+          console.log(this);
+        }
+      }
+
+      bark() {
+        console.log(this);
+        console.log(`我的名字是${this.name}，我${this.age}岁了。`);
+      }
+
+      c = function() {
+        console.log(this);
+      }
+    }
+
+    const d = new Dog('旺财', 4);
+    // 1.对象调用实例方法bark，this是实例对象d
+    d.bark(); 
+
+    /* 
+      2.此时x也指向实例对象d中的bark方法：直接调用方法bark，this是Window对象
+      但是对于类中定义的所有一般方法，浏览器在运行是全都加上了use strict，所以直接调用时this是undefined
+    */
+    const x = d.bark;
+    //x();
+
+    const f = d.c;
+    console.log('====');
+    f();
+
+    // 3.严格模式可以局部开启
+    function f1() {
+      'use strict'
+      console.log(this);//undefined
+    }
+    function f2() {
+      console.log(this);//Window
+    }
+    f1();
+    f2();
+
+    // 严格模式：undefined
+    const y = d.f;
+    y();
+
+    // 不是严格模式：window
+    let obj = {
+      a:1,
+      b:2,
+      c:function(){
+        console.log(this);
+      }
+    }
+    const z = obj.c;
+    z();
+  </script>
+</body>
+</html>

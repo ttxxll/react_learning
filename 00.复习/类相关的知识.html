@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <title>Document</title>
+</head>
+<body>
+  <script type="text/javascript">
+    //1.定义一个Person类
+    class Person{
+
+      // 构造器中的this：当前正在创建的对象实例
+      constructor(name, age) {
+        this.name = name;
+        this.age = age;
+      }
+
+      /* 
+        类中的一般方法不用function关键字定义
+          speak()放在了哪里：Person类的原型对象上，供实例使用。
+            注意：这里没有说必须是Person实例，因为Person的子类实例也可以调用该方法，此时this就是子类实例
+          speak()中的this是谁：
+            如果speak是通过Person实例调用的，那么this就是这个Person实例
+            如果用call(xxx)调用的，那么this就是xxx。
+      */
+      speak() {
+        console.log(this);
+        console.log(`我叫${this.name}，我今年${this.age}岁了。`);
+      }
+    }
+    class Dog{
+
+    }
+    //2.创建一个Person实例
+    const p1 = new Person('txl', '18');
+    p1.speak();
+    p1.speak.call(1);
+    const d1 = new Dog();
+    console.log(p1);
+    console.log(d1);
+    /* 
+      3.定义一个Student类继承Person
+        我的推测：s1实例的原型链：s1实例对象--->Student类的原型对象--->父类Perosn的原型对象-->Object类的原型对象。
+        因为speak()方法在父类Perosn的原型对象上，所以可以通过s1实例找到speak()方法并调用，也是继承的一种体现。
+        如果我们在子类中重写了从父类中继承的speak()方法，那么Student类的原型对象也会有speak()方法，那么在调用speak()方法时，
+      会先找到Student的原型对象中的speak()方法，然后直接返回。
+      
+        注意：子类可以不写构造器，此时用的是父类的构造器。如果定义了自己的构造器，那么必须要调用super，且要放在this之前。
+    */
+    class Student extends Person{
+      constructor(name, age, grade){
+        super(name,age);
+        this.grade = grade;
+      }
+      speak(){
+        console.log(`我叫${this.name}，我今年${this.age}岁了，我${this.grade}了。`);
+      }
+    }
+    const s1 = new Student('小毛', 18, '初一');
+    s1.speak();
+    console.log(s1);
+
+    /* 
+      类中能写什么？
+    */
+    class Car {
+      // 注意这个{}不是方法体，所以不是什么js代码都能写
+      // console.log(1); 报错
+
+      //1.构造器
+      constructor(name, price) {
+        this.name = name;
+        this.price = price;
+      }
+
+      //2.一般方法
+      run() {
+        console.log('running......');
+      }
+      
+      //3.赋值语句
+      // 给实例添加一个属性，注意是给实例。
+      a = 1; 
+      // 给实例添加一个属性b，且b是一个方法。此时要注意b指向的方法是放在实例对象上的，不同于一般方法是放在类原型对象上的。
+      b = function() {
+        console.log('我是b函数');
+      }
+      // 给Car类添加一个静态属性：静态属性也不是放在原型对象上的，可以直接通过类名来访问。
+      static field1 = 999;
+    }
+
+    // 给Car类添加一个静态属性:可以直接通过类名来访问
+    Car.field2 = 'txl';
+    console.log(Car.field1);
+    console.log(Car.field2);
+
+    const c = new Car('阿特兹', '30W');
+    console.log(c);
+    c.run();
+    c.b();
+    console.log(c.a);
+  </script>
+</body>
+</html>

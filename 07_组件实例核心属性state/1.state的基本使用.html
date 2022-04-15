@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>函数式组件</title>
+    <!-- 引入react核心库 -->
+    <script type="text/javascript" src="../js/react.development.js"></script>
+    <!-- 引入react-dom：用于支持react操作DOM -->
+    <script type="text/javascript" src="../js/react-dom.development.js"></script>
+    <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/babel">
+    // 1.定义一个类式组件：注意一点类本省的方法也会自动开启严格模式
+    class Weather extends React.Component {
+
+      constructor(props) {
+        super(props);
+        this.state = {isHot: true}; //初始化状态
+        /* 
+          赋值语句先从右边看：
+            this.show：
+              this是weather实例对象，虽然show方法不在weather对象上，但是在Weather原型对象上。
+              并且可以通过实例对象this找到show方法。
+            this.show.bind(this)：
+              找到了show方法后，通过bind改变show方法的this为weather实例对象this，然后返回这个新的show方法
+            this.show = this.show.bind(this);
+              当前weather实例对象是没有show属性的，我们在构造方法中定义一个show属性，并将bind返回的show方法
+              赋值给show属性。
+          这句话主要做了：
+            给自身追加一个同名属性show，这个属性的值是一个方法，这个方法是根据原型对象上的show()方法
+            在用bind()方法改变了方法的this后得到的。
+        */
+        this.show = this.show.bind(this);
+      }
+
+      render() { // render调用次数：1+n次，1是页面刚加载时调用，n是后续页面的改变次数，每次改变都会重新调用render刷新页面
+        const {isHot} = this.state;
+        /* 
+          3.分析一下：
+            为什么是this.show：
+              show()方法是在原型对象中的，我们需要找到它，怎么找到？
+              必须得有一个指向它的引用，此时render里面就有一个this，所以直接用this来找到show()方法
+
+            this.show和this.show()：
+              很重要的一点onClick=XXX是什么意思：
+                指定回调函数。不是要执行回调，所以一般都是指定方法名fun，而不是执行方法fun()
+                指定回调函数，每次触发事件时，都会回调这个事件函数。
+              onClick={this.show}：
+                最重要的一点：{}中是要解析的js表达式，this.show被解析后得到的值是什么？是指向show方法的引用！！！
+                之后触发事件时，会直接通过这个引用去调用show()，此时是直接调用。触发事件时，回调不是由组件实例调用的，是直接/全局调用。
+                所以this按理说应该是window，但是类里面的方法绘默认开启严格模式，不允许this指向window对象。
+              onClick={this.show()}:
+                意味解析{}中的js代码时：会直接运行this.show()，得到它的返回值。
+                返回值在此处不重要，关键是会直接调用这个方法，而不是事件触发才调用的。
+                所以效果是，页面一打开就触发了show()方法，但是此时this是Weather对象。
+                然后我们再点击触发事件时，浏览器发现事件动作是一个wather对象，根本不是一个方法，就无法做任何动作了。
+
+                如果this.show()的返回值又是一个函数：将原来的事件函数放到show()的返回值上，那么我们可以避免页面
+                一打开就触发了事件动作。
+                每次一点击时，就会调用show()返回的函数，比如show1()。返回了一个指向返回函数的引用。
+                之后每次触发事件，都会通过这个引用直接调用show1()返回的这个函数，此时也是直接调用，且在类中，所以this也是undefined
+                但是我们要解决的是this的问题，要每次发生事件动作时，拿到的this指向的是weather实例。
+
+            4.最终的this指向问题的解决办法：
+              在类的构造方法中指定了一个同名属性：this.show = this.show.bind(this);
+              onClick={this.show}：在为onClick事件指定回调函数，会先找到show属性，但是此时show属性指向的那个show方法的this就是当前实例
+
+        */
+        return <h1 onClick={this.show}>今天的天气很{isHot ? hot : cool}</h1>
+      }
+
+      /* 
+        业务需要的事件回调：放在了Weather的原型对象上，供实例使用。
+        供实例使用的意思：是要靠实例找到原型上的东西
+      */
+      show() {
+        console.log(this);
+        /* 
+          注意：state不可以直接修改，要用setState去修改
+        */
+        //this.state.isHot = !this.state.isHot;
+        const isHot = this.state.isHot;
+        this.setState({isHot: !isHot})
+        
+      }
+
+      show1() {
+        console.log(this);
+        return function() {
+          console.log(this);//undefined
+          alert(1);
+        }
+      }
+    }
+
+    // 2.变量
+    let hot = '炎热';
+    let cool = '凉爽';
+    
+    /* 
+      2.渲染组件到页面
+        1.React解析组件标签，寻找Demo组件的定义位置
+        2.React发现Demo组件是用类定义的：React会创建一个该类的实例对象---d
+        3.通过该实例对象d调用render方法：d.render()
+        4.所以render()方法是通过组件实例对象调用的，没有丢失this对象。（不是直接调用，this对象不是window，不会因为严格模式变成undefined）
+    */
+    ReactDOM.render(<Weather/>, document.getElementById('test'));
+  </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body>
+  <script type="text/javascript">
+    /* 
+      只有对象和数组才能解构赋值
+    */
+    let obj = {a:1, b:2, c:3, d:{x:88, y:99}}
+    //对象解构赋值：确保属性名一致
+    const {b, c} = obj;
+    const {y} = obj.d; // const y = obj.d.y
+
+    // 连续解构赋值
+    const {d:{x}} = obj; //const x = obj.d.x
+
+    // 连续解构赋值+重命名
+    const {d:{x:value}} = obj;
+
+    console.log(b);
+    console.log(c);
+    console.log(y);
+    console.log(x);
+    console.log(value);
+
+
+    //数组解构赋值：用逗号做占位符
+    let arr = [1,2,3,4];
+    const [,,a] = arr;
+    const [,d] = arr;
+    console.log(a);
+    console.log(d);
+  </script>
+</body>
+</html>

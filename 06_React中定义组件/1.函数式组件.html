@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>函数式组件</title>
+    <!-- 引入react核心库 -->
+    <script type="text/javascript" src="../js/react.development.js"></script>
+    <!-- 引入react-dom：用于支持react操作DOM -->
+    <script type="text/javascript" src="../js/react-dom.development.js"></script>
+    <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+    <script type="text/javascript" src="../js/babel.min.js"></script>
+</head>
+<body>
+  <div id="test"></div>
+
+  <script type="text/babel">
+    /* 
+      1.定义一个函数式组件：组件名首字母要大写，因为使用组件时标签名的首字母必须大写
+        本质上是一个回调函数：我们定义了函数，并且没有显示地去执行它，但是最终它被执行的了（因为返回结果即虚拟DOM，被渲染到页面登上了）。
+
+    */
+    function Demo() {
+      console.log(this);
+      return <h1>React测试：函数式定义简单组件</h1>
+    }
+
+    /* 
+      2.渲染组件到页面
+        1.使用组件：首字母要大写，且标签要闭合，且要有返回值
+        2.此处ReactDOM.render(<Demo/>, document.getElementById('test'))大致做了两件事：
+          React解析组件标签<Demo/>，寻找Demo组件的定义位置
+          React发现Demo组件是用函数定义的，随后React去直接调用Demo函数，将返回的虚拟DOM渲染到页面。
+            关注一下直接调用：Demo()，不是Demo.call(xxx)，也不是obj.Demo()。此时的this按理说是window对象
+        3.注意：React直接调用Demo函数，此时在Demo()中打印的this按理应该是window对象，但是却发现是undefined。
+          因为上述的Demo()是一个type="text/babel"类型的脚本，会经过babel翻译，开启了严格模式：
+        不允许一个自定义的this指向Window对象。所以是undefined。
+          这也体现了函数式组件的天生缺陷：丢失了this
+    */
+    ReactDOM.render(<Demo/>, document.getElementById('test'))
+  </script>
+</body>
+</html>

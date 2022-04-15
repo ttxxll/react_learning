@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>函数式组件使用props</title>
+  <!-- 引入react核心库：全局多一个React -->
+  <script type="text/javascript" src="../js/react.development.js"></script>
+  <!-- 引入react-dom：用于支持react操作DOM，全局多一个React.DOM -->
+  <script type="text/javascript" src="../js/react-dom.development.js"></script>
+  <!-- 引入babel，用于将jsx转为js，es6转为es5 -->
+  <script type="text/javascript" src="../js/babel.min.js"></script>
+  <!-- 引入props-types：用于对porps接收的标签属性进行限制，全局多一个PropTypes -->
+  <script type="text/javascript" src="../js/prop-types.js"></script>
+</head>
+<body>
+  <div id="test"></div>
+  <script type="text/babel">
+    // 1.定义一个函数式组件
+    function Person(props) {
+      const {name, sex, age} = props;
+      return(
+        <ul>
+          <li>姓名：{name}</li>
+          <li>性别：{sex}</li>
+          <li>年龄：{age+1}</li>
+        </ul>
+      )
+    }
+
+    // 为函数式组件的props参数加上一些限制
+    Person.propTypes = {
+      name: PropTypes.string.isRequired,
+      age: PropTypes.number,
+      sex: PropTypes.string
+    }
+    Person.defaultProps = {
+      age:18
+    }
+
+    // 2.将组件渲染到页面上：传递的标签属性会传递给函数式组件中的props参数
+    ReactDOM.render(<Person name="老刘" sex="男" age={11}/>, document.getElementById('test'))
+  </script>
+</body>
+</html>
